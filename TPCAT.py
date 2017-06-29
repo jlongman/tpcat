@@ -103,6 +103,7 @@ class Parser():
         total['remote'] = 0
         total['remote_received'] = 0
         total['duplicates'] = 0
+        total['problems'] = 0
         self.pcap_local = None
         self.pcap_remote = None
         self.sspacket = None
@@ -617,6 +618,7 @@ class Parser():
 
             for datapak in differences:
                 if not datapak in remote_packets:
+                    self.total['problems'] += 1
                     src, dst, ipid = datapak
                     self.rtxtctrl.BeginBold()
                     self.rtxtctrl.WriteText("Packet Dropped - Source:")
@@ -633,6 +635,7 @@ class Parser():
                     self.rtxtctrl.Newline()
 
                 if not datapak in local_packets:
+                    self.total['problems'] += 1
                     src, dst, ipid = datapak
                     self.rtxtctrl.BeginBold()
                     self.rtxtctrl.WriteText("Packet Forged - Source:")
@@ -647,6 +650,9 @@ class Parser():
                     self.rtxtctrl.EndBold()
                     self.rtxtctrl.WriteText(" %s " % (ipid))
                     self.rtxtctrl.Newline()
+                    
+            self.rtxtctrl.Newline()
+            self.rtxtctrl.WriteText("Total number of problematic packets : %s\n" %  self.total['problems'])
 
         # if self.Time_tpcat == "yes":
         #     Local_to_RemoteTimestamp2 = time.strftime("%H:%M:%S", time.localtime())
